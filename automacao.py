@@ -66,3 +66,4 @@ for resultado in lista_resultados:
             link = elemento_pai.get_attribute('href')
             print(preco, nome, link)
 
+#por algum motivo o codigo parou de funcionar... procurando o problema
