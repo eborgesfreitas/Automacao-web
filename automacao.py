@@ -14,9 +14,9 @@ tabela_produtos = pd.read_excel('buscas.xlsx')
 #abrir o navegador, pesquisar produto, entrar na aba shopping e pegar infos do produto
 nav.get('https://www.google.com.br/')
 produto = 'iphohe 12 64 gb'
-produto = produto.lower()
+#produto = produto.lower()
 termos_banidos = 'mini watch'
-termos_banidos = termos_banidos.lower()
+#termos_banidos = termos_banidos.lower()
 lista_termos_nome_produto = produto.split(" ")
 lista_termos_banidos = termos_banidos.split(" ")
 preco_minimo = 3000
@@ -35,7 +35,7 @@ lista_resultados = nav.find_elements('class name', 'i0X6df')
 
 for resultado in lista_resultados:
     nome = resultado.find_element('class name', 'tAxDx').text
-    nome = nome.lower()
+    #nome = nome.lower()
 
     #analisar termos banidos
     tem_termos_banidos = False
@@ -50,7 +50,7 @@ for resultado in lista_resultados:
             tem_todos_termos_produtos = False
 
     #selecionar apenas tem_termos_banidos = False e tem_todos_termos_produtos = True
-    if not tem_termos_banidos and tem_todos_termos_produtos:
+    #if not tem_termos_banidos and tem_todos_termos_produtos:
         #tratamento dos valores do preço
         preco = resultado.find_element('class name', 'a8Pemb').text
         preco = preco.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
