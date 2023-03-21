@@ -26,6 +26,8 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     termos_banidos = termos_banidos.lower()
     lista_termos_nome_produto = produto.split(" ")
     lista_termos_banidos = termos_banidos.split(" ")
+    preco_minimo = float(preco_minimo)
+    preco_maximo = float(preco_maximo)
     lista_ofertas = []
     
     #abrir navegador
@@ -66,8 +68,7 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
             preco = resultado.find_element('class name', 'a8Pemb').text
             preco = preco.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
             preco = float(preco)
-            preco_minimo = float(preco_minimo)
-            preco_maximo = float(preco_maximo)
+            
             #se o preco está entre minimo e maximo
             if preco_minimo <= preco <= preco_maximo:
                 #pegando o link do produto
@@ -78,4 +79,31 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     return lista_ofertas
 
 lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
-print(lista_ofertas_google_shopping)
+#print(lista_ofertas_google_shopping)
+
+def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
+    #tratando nomes banidos e palavras obrigatorias na busca e preço
+    produto = produto.lower()
+    termos_banidos = termos_banidos.lower()
+    lista_termos_nome_produto = produto.split(" ")
+    lista_termos_banidos = termos_banidos.split(" ")
+    preco_minimo = float(preco_minimo)
+    preco_maximo = float(preco_maximo)
+    lista_ofertas = []
+
+    #abrir navegador
+    nav.get('https://www.buscape.com.br/')
+    time.sleep(1)
+    nav.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input').send_keys(produto, Keys.ENTER)
+    time.sleep(2)
+    
+    #pegar as informações do produto
+    lista_resultados = nav.find_elements('class name', 'SearchCard_ProductCard_Inner__7JhKb')
+
+    for resultado in lista_resultados:
+        preco = resultado.find_element('class name', 'Text_MobileHeadingS__Zxam2').text
+        nome = resultado.find_element('class name', 'SearchCard_ProductCard_Name__ZaO5o').text
+        link = resultado.get_attribute('href')
+        print(nome, preco, link)
+
+busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
