@@ -17,8 +17,21 @@ tabela_produtos = pd.read_excel('buscas.xlsx')
 produto = 'iphone 12 64 gb'
 termos_banidos = 'mini watch'
 preco_minimo = 3000
-preco_maximo = 4500
+preco_maximo = 5500
 
+def verificar_tem_termos_banidos(lista_termos_banidos, nome):
+    tem_termos_banidos = False
+    for palavra in lista_termos_banidos:
+        if palavra in nome:
+            tem_termos_banidos = True
+    return tem_termos_banidos
+
+def verificar_tem_todos_termos(lista_termos_nome_produto, nome):
+    tem_todos_termos_produtos = True
+    for palavra in lista_termos_nome_produto:
+        if palavra not in nome:
+            tem_todos_termos_produtos = False
+    return tem_todos_termos_produtos
 
 def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca
@@ -51,16 +64,10 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
         nome = nome.lower()
 
         #analisar termos banidos
-        tem_termos_banidos = False
-        for palavra in lista_termos_banidos:
-            if palavra in nome:
-                tem_termos_banidos = True
+        tem_termos_banidos = verificar_tem_termos_banidos(lista_termos_banidos, nome)
                 
         #analisar se tem TODOS os termos obrigatorios do nome
-        tem_todos_termos_produtos = True
-        for palavra in lista_termos_nome_produto:
-            if palavra not in nome:
-                tem_todos_termos_produtos = False
+        tem_todos_termos_produtos = verificar_tem_todos_termos(lista_termos_nome_produto, nome)
                 
         #excluindo produtos com termos banidos e permitindo apenas os que possuam todos os nomes obrigatorios
         if not tem_termos_banidos and tem_todos_termos_produtos:
@@ -79,7 +86,7 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     return lista_ofertas
 
 lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
-#print(lista_ofertas_google_shopping)
+print(lista_ofertas_google_shopping)
 
 def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca e preço
@@ -96,14 +103,33 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     time.sleep(1)
     nav.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input').send_keys(produto, Keys.ENTER)
     time.sleep(2)
-    
+
     #pegar as informações do produto
     lista_resultados = nav.find_elements('class name', 'SearchCard_ProductCard_Inner__7JhKb')
 
     for resultado in lista_resultados:
         preco = resultado.find_element('class name', 'Text_MobileHeadingS__Zxam2').text
         nome = resultado.find_element('class name', 'SearchCard_ProductCard_Name__ZaO5o').text
+        nome = nome.lower()
         link = resultado.get_attribute('href')
-        print(nome, preco, link)
 
-busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
+        #analisar termos banidos
+        tem_termos_banidos = verificar_tem_termos_banidos(lista_termos_banidos, nome)
+                
+        #analisar se tem TODOS os termos obrigatorios do nome
+        tem_todos_termos_produtos = verificar_tem_todos_termos(lista_termos_nome_produto, nome)
+
+        #analisar se o preço está entre minimo e máximo
+        if not tem_termos_banidos and tem_todos_termos_produtos:
+            #tratar o preço
+            preco = preco.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+            preco = float(preco)
+            if preco_minimo <= preco <= preco_maximo:
+                lista_ofertas.append((nome, preco, link))
+    
+    return lista_ofertas
+    
+
+
+lista_ofertas_buscape = busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
+print(lista_ofertas_buscape)
