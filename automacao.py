@@ -13,12 +13,7 @@ nav = webdriver.Chrome(service=servico)
 #importar/visualizar base de dados
 tabela_produtos = pd.read_excel('buscas.xlsx')
 
-#pegar infos do produto
-produto = 'iphone 12 64 gb'
-termos_banidos = 'mini watch'
-preco_minimo = 3000
-preco_maximo = 5500
-
+#FUNÇÕES PARA VERIFICAR TERMOS BANIDOS E TERMOS OBRIGATÓRIOS
 def verificar_tem_termos_banidos(lista_termos_banidos, nome):
     tem_termos_banidos = False
     for palavra in lista_termos_banidos:
@@ -33,6 +28,8 @@ def verificar_tem_todos_termos(lista_termos_nome_produto, nome):
             tem_todos_termos_produtos = False
     return tem_todos_termos_produtos
 
+
+#FUNÇÃO PARA BUSCA NO GOOGLE SHOPPING
 def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca
     produto = produto.lower()
@@ -85,9 +82,8 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
                 lista_ofertas.append((nome, preco, link))
     return lista_ofertas
 
-lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
-print(lista_ofertas_google_shopping)
 
+#FUNÇÃO PARA BUSCA NO BUSCAPÉ
 def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca e preço
     produto = produto.lower()
@@ -130,6 +126,29 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     return lista_ofertas
     
 
+#CONSTRUINDO A LISTA DE OFERTAS E MONTANDO UM DATAFRAME
+for linha in tabela_produtos.index:
+    #pegar infos do produto
+    produto = tabela_produtos.loc[linha, "Nome"]
+    termos_banidos = tabela_produtos.loc[linha, "Termos banidos"]
+    preco_minimo = tabela_produtos.loc[linha, "Preço mínimo"]
+    preco_maximo = tabela_produtos.loc[linha, "Preço máximo"]
 
-lista_ofertas_buscape = busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
-print(lista_ofertas_buscape)
+    #executando função do google shopping
+    lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
+    if lista_ofertas_google_shopping:
+        tabela_google_shopping = pd.DataFrame(lista_ofertas_google_shopping, columns=['Produto', 'Preço', 'link'])
+        print(tabela_google_shopping)
+    else:
+        tabela_google_shopping = None
+        
+    #executando função do buscapé
+    lista_ofertas_buscape = busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
+    if lista_ofertas_buscape:
+        tabela_buscape = pd.DataFrame(lista_ofertas_buscape, columns=['Produto', 'Preço', 'link'])
+        print(tabela_buscape)
+    else:
+        tabela_buscape = None
+    
+
+#EXPORTANDO PARA O EXCEL
