@@ -3,6 +3,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 import pandas as pd
+import time
+
 
 #criando navegador
 servico = Service(ChromeDriverManager().install())
@@ -11,46 +13,51 @@ nav = webdriver.Chrome(service=servico)
 #importar/visualizar base de dados
 tabela_produtos = pd.read_excel('buscas.xlsx')
 
-#abrir o navegador, pesquisar produto, entrar na aba shopping e pegar infos do produto
-nav.get('https://www.google.com.br/')
-produto = 'iphohe 12 64 gb'
-#produto = produto.lower()
+#pegar infos do produto
+
+produto = 'iphone 12 64 gb'
+produto = produto.lower()
 termos_banidos = 'mini watch'
-#termos_banidos = termos_banidos.lower()
+termos_banidos = termos_banidos.lower()
 lista_termos_nome_produto = produto.split(" ")
 lista_termos_banidos = termos_banidos.split(" ")
 preco_minimo = 3000
-preco_maximo = 5500
+preco_maximo = 4500
+lista_resultados = []
 
-
+#abrir navegador
+nav.get('https://www.google.com.br/')
+time.sleep(1)
 nav.find_element('xpath', '/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input').send_keys(produto, Keys.ENTER)
 
+#entrar na aba shopping
 elementos = nav.find_elements("class name", "hdtb-mitem")
 for item in elementos:
     if 'Shopping' in item.text:
         item.click()
         break
 
+#pegar as informações do produto
 lista_resultados = nav.find_elements('class name', 'i0X6df')
 
 for resultado in lista_resultados:
     nome = resultado.find_element('class name', 'tAxDx').text
-    #nome = nome.lower()
+    nome = nome.lower()
 
     #analisar termos banidos
     tem_termos_banidos = False
     for palavra in lista_termos_banidos:
         if palavra in nome:
             tem_termos_banidos = True
-
+            
     #tem TODOS os termos do nome
     tem_todos_termos_produtos = True
     for palavra in lista_termos_nome_produto:
         if palavra not in nome:
             tem_todos_termos_produtos = False
-
+            
     #selecionar apenas tem_termos_banidos = False e tem_todos_termos_produtos = True
-    #if not tem_termos_banidos and tem_todos_termos_produtos:
+    if not tem_termos_banidos and tem_todos_termos_produtos:
         #tratamento dos valores do preço
         preco = resultado.find_element('class name', 'a8Pemb').text
         preco = preco.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
@@ -65,5 +72,3 @@ for resultado in lista_resultados:
             elemento_pai = elemento_referencia.find_element('xpath', '..')
             link = elemento_pai.get_attribute('href')
             print(preco, nome, link)
-
-#por algum motivo o codigo parou de funcionar... procurando o problema
