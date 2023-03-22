@@ -127,6 +127,7 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     
 
 #CONSTRUINDO A LISTA DE OFERTAS E MONTANDO UM DATAFRAME
+tabela_ofertas = pd.DataFrame()
 for linha in tabela_produtos.index:
     #pegar infos do produto
     produto = tabela_produtos.loc[linha, "Nome"]
@@ -138,7 +139,7 @@ for linha in tabela_produtos.index:
     lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
     if lista_ofertas_google_shopping:
         tabela_google_shopping = pd.DataFrame(lista_ofertas_google_shopping, columns=['Produto', 'Preço', 'link'])
-        print(tabela_google_shopping)
+        tabela_ofertas = pd.concat([tabela_ofertas, tabela_google_shopping])
     else:
         tabela_google_shopping = None
         
@@ -146,9 +147,10 @@ for linha in tabela_produtos.index:
     lista_ofertas_buscape = busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
     if lista_ofertas_buscape:
         tabela_buscape = pd.DataFrame(lista_ofertas_buscape, columns=['Produto', 'Preço', 'link'])
-        print(tabela_buscape)
+        tabela_ofertas = pd.concat([tabela_ofertas, tabela_buscape])
     else:
         tabela_buscape = None
-    
 
+tabela_ofertas = tabela_ofertas.sort_values(by='Preço')    
 #EXPORTANDO PARA O EXCEL
+tabela_ofertas.to_excel("Ofertas.xlsx", index=False)
