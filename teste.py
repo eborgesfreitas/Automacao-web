@@ -11,7 +11,7 @@ servico = Service(ChromeDriverManager().install())
 nav = webdriver.Chrome(service=servico)
 
 #importar/visualizar base de dados
-tabela_produtos = pd.read_excel('peçascomputador.xlsx')
+tabela_produtos = pd.read_excel('buscas.xlsx')
 
 #FUNÇÕES PARA VERIFICAR TERMOS BANIDOS E TERMOS OBRIGATÓRIOS
 def verificar_tem_termos_banidos(lista_termos_banidos, nome):
@@ -34,8 +34,7 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     #tratando nomes banidos e palavras obrigatorias na busca
     produto = produto.lower()
     termos_banidos = termos_banidos.lower()
-    termos_banidos = termos_banidos
-    lista_termos_nome_produto = produto.split(" ")+ pecas.split(" ")
+    lista_termos_nome_produto = produto.split(" ")
     lista_termos_banidos = termos_banidos.split(" ")
     preco_minimo = float(preco_minimo)
     preco_maximo = float(preco_maximo)
@@ -44,7 +43,7 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     #abrir navegador
     nav.get('https://www.google.com.br/')
     time.sleep(1)
-    nav.find_element('xpath', '/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input').send_keys(pecas, " ", produto, Keys.ENTER)
+    nav.find_element('xpath', '/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div/div[2]/input').send_keys(produto, Keys.ENTER)
 
     #entrar na aba shopping
     elementos = nav.find_elements("class name", "hdtb-mitem")
@@ -89,7 +88,7 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca e preço
     produto = produto.lower()
     termos_banidos = termos_banidos.lower()
-    lista_termos_nome_produto = produto.split(" ") + pecas.split(" ")
+    lista_termos_nome_produto = produto.split(" ")
     lista_termos_banidos = termos_banidos.split(" ")
     preco_minimo = float(preco_minimo)
     preco_maximo = float(preco_maximo)
@@ -98,7 +97,7 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #abrir navegador
     nav.get('https://www.buscape.com.br/')
     time.sleep(1)
-    nav.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input').send_keys(pecas," ", produto, Keys.ENTER)
+    nav.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input').send_keys(produto, Keys.ENTER)
     time.sleep(2)
 
     #pegar as informações do produto
@@ -131,8 +130,7 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
 tabela_ofertas = pd.DataFrame()
 for linha in tabela_produtos.index:
     #pegar infos do produto
-    produto = tabela_produtos.loc[linha, "Nome/Modelo/marca"]
-    pecas = tabela_produtos.loc[linha, "Peças"]
+    produto = tabela_produtos.loc[linha, "Nome"]
     termos_banidos = tabela_produtos.loc[linha, "Termos banidos"]
     preco_minimo = tabela_produtos.loc[linha, "Preço mínimo"]
     preco_maximo = tabela_produtos.loc[linha, "Preço máximo"]
@@ -153,7 +151,6 @@ for linha in tabela_produtos.index:
     else:
         tabela_buscape = None
 
-#tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
-print(tabela_ofertas)    
+tabela_ofertas = tabela_ofertas.sort_values(by='Preço')    
 #EXPORTANDO PARA O EXCEL
-tabela_ofertas.to_excel("computadormontado.xlsx", index=False)
+tabela_ofertas.to_excel("Ofertas.xlsx", index=False)
