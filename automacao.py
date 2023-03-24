@@ -153,4 +153,4 @@ for linha in tabela_produtos.index:
 tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
 
 #EXPORTANDO PARA O EXCEL
-tabela_ofertas.to_excel("computadormontado.xlsx", index=False)
+tabela_ofertas.to_excel("resultadodasbuscas.xlsx", index=False)
