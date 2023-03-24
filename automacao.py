@@ -154,6 +154,6 @@ for linha in tabela_produtos.index:
         tabela_buscape = None
 
 #tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
-print(tabela_ofertas)    
+  
 #EXPORTANDO PARA O EXCEL
 tabela_ofertas.to_excel("computadormontado.xlsx", index=False)
