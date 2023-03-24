@@ -34,8 +34,7 @@ def busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maxi
     #tratando nomes banidos e palavras obrigatorias na busca
     produto = produto.lower()
     termos_banidos = termos_banidos.lower()
-    termos_banidos = termos_banidos
-    lista_termos_nome_produto = produto.split(" ")+ pecas.split(" ")
+    lista_termos_nome_produto = produto.split(" ") #pecas.split(" ")
     lista_termos_banidos = termos_banidos.split(" ")
     preco_minimo = float(preco_minimo)
     preco_maximo = float(preco_maximo)
@@ -89,7 +88,7 @@ def busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo):
     #tratando nomes banidos e palavras obrigatorias na busca e preço
     produto = produto.lower()
     termos_banidos = termos_banidos.lower()
-    lista_termos_nome_produto = produto.split(" ") + pecas.split(" ")
+    lista_termos_nome_produto = produto.split(" ") #+ pecas.split(" ")
     lista_termos_banidos = termos_banidos.split(" ")
     preco_minimo = float(preco_minimo)
     preco_maximo = float(preco_maximo)
@@ -132,28 +131,29 @@ tabela_ofertas = pd.DataFrame()
 for linha in tabela_produtos.index:
     #pegar infos do produto
     produto = tabela_produtos.loc[linha, "Nome/Modelo/marca"]
+    print(produto)
     pecas = tabela_produtos.loc[linha, "Peças"]
+    print(pecas)
     termos_banidos = tabela_produtos.loc[linha, "Termos banidos"]
+    print(termos_banidos)
     preco_minimo = tabela_produtos.loc[linha, "Preço mínimo"]
     preco_maximo = tabela_produtos.loc[linha, "Preço máximo"]
 
     #executando função do google shopping
     lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
+    print(lista_ofertas_google_shopping)
     if lista_ofertas_google_shopping:
         tabela_google_shopping = pd.DataFrame(lista_ofertas_google_shopping, columns=['Produto', 'Preço', 'link'])
         tabela_ofertas = pd.concat([tabela_ofertas, tabela_google_shopping])
-    else:
-        tabela_google_shopping = None
         
     #executando função do buscapé
     lista_ofertas_buscape = busca_buscape(nav, produto, termos_banidos, preco_minimo, preco_maximo)
     if lista_ofertas_buscape:
         tabela_buscape = pd.DataFrame(lista_ofertas_buscape, columns=['Produto', 'Preço', 'link'])
         tabela_ofertas = pd.concat([tabela_ofertas, tabela_buscape])
-    else:
-        tabela_buscape = None
 
-#tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
-  
+tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
+
+
 #EXPORTANDO PARA O EXCEL
 tabela_ofertas.to_excel("computadormontado.xlsx", index=False)
