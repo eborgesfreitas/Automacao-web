@@ -131,11 +131,8 @@ tabela_ofertas = pd.DataFrame()
 for linha in tabela_produtos.index:
     #pegar infos do produto
     produto = tabela_produtos.loc[linha, "Nome/Modelo/marca"]
-    print(produto)
     pecas = tabela_produtos.loc[linha, "Peças"]
-    print(pecas)
     termos_banidos = tabela_produtos.loc[linha, "Termos banidos"]
-    print(termos_banidos)
     preco_minimo = tabela_produtos.loc[linha, "Preço mínimo"]
     preco_maximo = tabela_produtos.loc[linha, "Preço máximo"]
 
