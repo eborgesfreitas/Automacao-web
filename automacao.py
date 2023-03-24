@@ -13,6 +13,8 @@ nav = webdriver.Chrome(service=servico)
 #importar/visualizar base de dados
 tabela_produtos = pd.read_excel('peçascomputador.xlsx')
 
+lista_pecas = []
+
 #FUNÇÕES PARA VERIFICAR TERMOS BANIDOS E TERMOS OBRIGATÓRIOS
 def verificar_tem_termos_banidos(lista_termos_banidos, nome):
     tem_termos_banidos = False
@@ -138,7 +140,6 @@ for linha in tabela_produtos.index:
 
     #executando função do google shopping
     lista_ofertas_google_shopping = busca_google_shopping(nav, produto, termos_banidos, preco_minimo, preco_maximo)
-    print(lista_ofertas_google_shopping)
     if lista_ofertas_google_shopping:
         tabela_google_shopping = pd.DataFrame(lista_ofertas_google_shopping, columns=['Produto', 'Preço', 'link'])
         tabela_ofertas = pd.concat([tabela_ofertas, tabela_google_shopping])
@@ -150,7 +151,6 @@ for linha in tabela_produtos.index:
         tabela_ofertas = pd.concat([tabela_ofertas, tabela_buscape])
 
 tabela_ofertas = tabela_ofertas.sort_values(by='Preço')
-
 
 #EXPORTANDO PARA O EXCEL
 tabela_ofertas.to_excel("computadormontado.xlsx", index=False)
